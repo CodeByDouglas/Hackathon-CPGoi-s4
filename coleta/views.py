@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Coleta_Organica, Coleta_Seletiva
+from .models import Coleta_Organica, Coleta_Seletiva, Eco_pontos
 
 class ConsultaColetaOrganica(APIView):
     def get(self, request, cep):
@@ -12,7 +12,7 @@ class ConsultaColetaOrganica(APIView):
                 "cep_inicio": coleta.cep_inicio,
                 "cep_fim": coleta.cep_fim,
             })
-        return Response({"Desculpe não consegui entender localizar seu endereço, verifica o seu CEP e reenvia para min por favor."}, status=404)
+        return Response({"Desculpe não cosegui localizar seu endereço, O CEP deve estar no formato XXXXX-XXX."}, status=404)
     
 class ConsultaColetaSeletiva(APIView):
         def get(self, request, cep):
@@ -24,4 +24,20 @@ class ConsultaColetaSeletiva(APIView):
                 "cep_inicio": coleta.cep_inicio,
                 "cep_fim": coleta.cep_fim,
             })
-            return Response({"Desculpe não consegui entender localizar seu endereço, verifica o seu CEP e reenvia para min por favor."}, status=404)
+            return Response({"Desculpe não cosegui localizar seu endereço, O CEP deve estar no formato XXXXX-XXX."}, status=404)
+
+class ConsultaEcoPontos(APIView):
+    def get(self, request):
+        coleta = Eco_pontos.objects.all()
+        if coleta.exists():
+            response_data = []
+            for item in coleta:
+                response_data.append({
+                    "Nome": item.Nome,
+                    "Dias_funcionamento": item.Dias_funcionamento,
+                    "Horario_funcionamento": item.Horario_funcionamento,
+                    "endereco": item.endereco,
+                    "cep": item.cep,
+                })
+            return Response(response_data)
+        return Response({"Desculpe, não consegui localizar nenhum Eco Ponto."}, status=404)
