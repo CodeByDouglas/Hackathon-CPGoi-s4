@@ -41,3 +41,9 @@ class ConsultaEcoPontos(APIView):
                 })
             return Response(response_data)
         return Response({"Desculpe, não consegui localizar nenhum Eco Ponto."}, status=404)
+
+
+class Entrada_de_menssagem (APIView):
+    def post(self, request):
+        # request (print(request.data))
+        return Response({"msg": "ok"})
