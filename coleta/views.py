@@ -1,6 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Coleta_Organica, Coleta_Seletiva, Eco_pontos
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from twilio.rest import Client
+import os
+import coleta.FucEnvio as envio_mensagem
+from .FucEnvio import envio_mensagem
+
+
 
 class ConsultaColetaOrganica(APIView):
     def get(self, request, cep):
@@ -47,3 +55,23 @@ class Entrada_de_menssagem (APIView):
     def post(self, request):
         # request (print(request.data))
         return Response({"msg": "ok"})
+
+
+
+
+class Eviar_mensagens(APIView):
+    def get(self, request, cep):
+        coleta = Coleta_Organica.objects.filter(cep_inicio__lte=cep, cep_fim__gte=cep).first()
+        
+def enviar_mensagem(body, to):
+    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(
+        from_='whatsapp:+14155238886',
+        body=body,
+        to=to
+    )
+
+    return message.sid
